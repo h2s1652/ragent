@@ -123,7 +123,7 @@ ai:
         embedding: /v1/embeddings
     bailian:
       url: https://dashscope.aliyuncs.com
-      api-key: sk-c79e3779602841ab86de61f2c37a2247
+      api-key: ${BAILIAN_API_KEY:}
       endpoints:
         chat: /compatible-mode/v1/chat/completions
         rerank: /api/v1/services/rerank/text-rerank/text-rerank
