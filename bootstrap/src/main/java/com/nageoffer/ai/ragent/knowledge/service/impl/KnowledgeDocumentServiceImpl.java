@@ -115,9 +115,6 @@ public class KnowledgeDocumentServiceImpl implements KnowledgeDocumentService {
     private final KnowledgeScheduleProperties scheduleProperties;
     private final RemoteFileFetcher remoteFileFetcher;
 
-    @Value("knowledge-document-chunk_topic${unique-name:}")
-    private String chunkTopic;
-
     @Override
     public KnowledgeDocumentVO upload(String kbId, KnowledgeDocumentUploadRequest requestParam, MultipartFile file) {
         KnowledgeBaseDO kbDO = knowledgeBaseMapper.selectById(kbId);
@@ -161,7 +158,8 @@ public class KnowledgeDocumentServiceImpl implements KnowledgeDocumentService {
                 .build();
 
         messageQueueProducer.sendInTransaction(
-                chunkTopic,
+                "knowledge-document-chunk-exchange",
+                "knowledge-document-chunk",
                 docId,
                 "文档分块",
                 event,

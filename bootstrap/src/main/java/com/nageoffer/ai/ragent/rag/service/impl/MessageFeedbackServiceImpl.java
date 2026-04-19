@@ -49,9 +49,6 @@ public class MessageFeedbackServiceImpl implements MessageFeedbackService {
     private final ConversationMessageMapper conversationMessageMapper;
     private final MessageQueueProducer messageQueueProducer;
 
-    @Value("message-feedback_topic${unique-name:}")
-    private String feedbackTopic;
-
     @Override
     public void submitFeedbackAsync(String messageId, MessageFeedbackRequest request) {
         String userId = UserContext.getUserId();
@@ -70,7 +67,7 @@ public class MessageFeedbackServiceImpl implements MessageFeedbackService {
                 .comment(request.getComment())
                 .submitTime(System.currentTimeMillis())
                 .build();
-        messageQueueProducer.send(feedbackTopic, userId + ":" + messageId, "消息反馈", event);
+        messageQueueProducer.send("message-feedback-exchange", "message-feedback", userId + ":" + messageId, "消息反馈", event);
     }
 
     @Override

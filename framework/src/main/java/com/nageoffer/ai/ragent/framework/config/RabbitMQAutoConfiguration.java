@@ -17,27 +17,28 @@
 
 package com.nageoffer.ai.ragent.framework.config;
 
-import com.nageoffer.ai.ragent.framework.mq.producer.DelegatingTransactionListener;
 import com.nageoffer.ai.ragent.framework.mq.producer.MessageQueueProducer;
-import com.nageoffer.ai.ragent.framework.mq.producer.RocketMQProducerAdapter;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import com.nageoffer.ai.ragent.framework.mq.producer.RabbitMQProducerAdapter;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * RocketMQ 消息队列自动装配配置
+ * RabbitMQ 消息队列自动装配配置
  */
 @Configuration
-public class RocketMQAutoConfiguration {
+public class RabbitMQAutoConfiguration {
 
     @Bean
-    public DelegatingTransactionListener delegatingTransactionListener() {
-        return new DelegatingTransactionListener();
+    public TransactionTemplate transactionTemplate(PlatformTransactionManager transactionManager) {
+        return new TransactionTemplate(transactionManager);
     }
 
     @Bean
-    public MessageQueueProducer messageQueueProducer(RocketMQTemplate rocketMQTemplate,
-                                                     DelegatingTransactionListener transactionListener) {
-        return new RocketMQProducerAdapter(rocketMQTemplate, transactionListener);
+    public MessageQueueProducer messageQueueProducer(RabbitTemplate rabbitTemplate,
+                                                     TransactionTemplate transactionTemplate) {
+        return new RabbitMQProducerAdapter(rabbitTemplate, transactionTemplate);
     }
 }
