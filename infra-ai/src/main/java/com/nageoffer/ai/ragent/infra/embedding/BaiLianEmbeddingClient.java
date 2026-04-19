@@ -34,7 +34,20 @@ public class BaiLianEmbeddingClient extends AbstractOpenAIStyleEmbeddingClient {
     }
 
     @Override
+    protected void customizeRequestBody(com.google.gson.JsonObject body, com.nageoffer.ai.ragent.infra.model.ModelTarget target) {
+        // 百炼 text-embedding-v3 支持的 dimension 为 [64, 128, 256, 512, 768, 1024]
+        // AbstractOpenAIStyleEmbeddingClient 的 doEmbed 方法中可能已经添加了 dimensions 字段
+        // 这里覆盖掉父类的 dimensions，改为 dimension
+        if (body.has("dimensions")) {
+            body.remove("dimensions");
+        }
+        if (target.candidate().getDimension() != null) {
+            body.addProperty("dimension", target.candidate().getDimension());
+        }
+    }
+
+    @Override
     protected int maxBatchSize() {
-        return 25; // 阿里百炼 embedding 接口默认支持的批量大小通常是 25
+        return 10; // 阿里百炼 text-embedding-v3 接口最大支持的批量大小为 10
     }
 }
